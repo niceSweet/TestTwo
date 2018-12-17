@@ -61,3 +61,4 @@ SELECT id FROM table_name WHERE id <> 1003
 
 已经建好的表的约束
 1.alter table table_name add constraint 约束名  foreign key table_name(column)  references  主键表名(column_id);
+2.SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE;  //查看所有约束
