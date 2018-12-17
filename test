@@ -1,1 +1,26 @@
-lrz is a boy
+mysql数据库笔记
+1.use databasename     //切换数据库；
+2.drop databasename    //删除数据库；
+3.show tables          //显示当前数据库的所有表；
+4.describe tablename   // 消失当前数据库的某个表的具体信息；
+5.show databases       //显示所有数据库；
+授权：
+1.revoke all privileges on *.* from root@"%"; 
+2.delete from user where user="root" and host="%";
+3.flush privileges;
+
+1.alter table t1 rename t2;   //将t1表重命名为t2；
+2.mysqldump -h host -u root -p dbname >dbname_backuo.sql;   //数据库备份；
+
+一些不常用的命令
+1.select version();     //显示mysql的版本；
+2.help select:          //查看select帮助；
+3.show status;          //查看mysql的详细使用情况；
+
+对数据库表的操作
+1.show tables;  //显示所选数据库的所有数据表；
+2.create table table_name(     //创建数据库；
+id  int not null primary key,
+name varchar(2) not null
+);
+
