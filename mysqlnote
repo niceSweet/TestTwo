@@ -20,8 +20,11 @@
 对数据库表的操作
 1.show tables;  //显示所选数据库的所有数据表；
 2.create table table_name(     //创建数据库；
-id  int not null primary key,
-name varchar(2) not null
+id  int not null primary key auto_increment,    //auto_increment自增约束
+age float not null default 0,                   //default 0   数值约束
+name  varchar(20)  unique,                      //unique  唯一约束，不能重复
+comeTime datae  not null default CURRENT_TIMESTAMP,
+class_id int references  class(id)              //外键约束
 );
 3.desc tablename;      //查看当前数据库表结构；
 4.drop table table_name;  //删除数据表；
@@ -45,3 +48,16 @@ name varchar(2) not null
 4.alter table tableName drop foreign key keyName;      //删除外键约束；keyName时外键别名；
 
 查询语句select
+1.不匹配：  <>  ,  !=
+SELECT id FROM table_name WHERE id <> 1003
+2.select column form table_name where id BETWEEN value1  AND value2;  //范围选择；
+3.select column from table_name  where filed IS null;  //空值检查；
+4.select * from table_name where  sql1  and sql2;    // sql1, sql2;同时满足；
+5.select * from table_name where  sql1  or sql2;     //sql1,sql2 满足一个就好了；
+6.允许and和or结合,但是优先处理and操作
+7.select * from table_name where column in(value1,value2);   //括号的每个值都匹配；
+8.select * from wms_respository where repo_id  REGEXP '[0-9]';   //select 条件也支持正则表达式；
+
+
+已经建好的表的约束
+1.alter table table_name add constraint 约束名  foreign key table_name(column)  references  主键表名(column_id);
