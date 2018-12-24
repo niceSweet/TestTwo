@@ -24,7 +24,9 @@ id  int not null primary key auto_increment,    //auto_increment自增约束
 age float not null default 0,                   //default 0   数值约束
 name  varchar(20)  unique,                      //unique  唯一约束，不能重复
 comeTime datae  not null default CURRENT_TIMESTAMP,
-class_id int references  class(id)              //外键约束
+(1)class_id int references  class(id)    ,          //外键约束
+//(2)userid  int not null,
+//constraint fk_user_role foreign key(userid) references user(id)
 );
 3.desc tablename;      //查看当前数据库表结构；
 4.drop table table_name;  //删除数据表；
