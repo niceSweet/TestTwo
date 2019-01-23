@@ -1,0 +1,52 @@
+1.下载elk镜像
+(1).docker search elk   #搜索elk镜像，下载第一个sebp/elk（可以随便选一个下载）
+(2).docker pull sebp/elk
+2.初始化容器：-v后面的参数是持久化到本地，将容器中文件映射到本地，这样改文件可以直接更改本地；（但是并没有生成文件，所以用第二条命令）
+（1）sudo docker run -d -p 5601:5601 -p 9200:9200 -p 5044:5044 -v /Users/admin/srv/elk/conf:/etc/logstash/conf.d/ -it --name elk sebp/elk
+（2）sudo docker run -d -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk
+-p:是映射端口；--name elk  sebp/elk   将sebp/elk 这个镜像运行时状态的名字叫elk，简单的说就是把容器取名为elk；
+
+3.下载rabbitmq镜像；
+docker pull rabbitmq
+4.运行镜像，开始容器
+docker run -d  -p 5672:5672 -p 15672:15672  --name rabbitmq  rabbitmq
+
+docker ps      #查看所有运行的容器；-a 查看所有容器
+docker stats   #查看容器运行状态，如果cpu百分百显示接近0 ，就说明开启完毕；
+4.这时访问浏览器:若都有页面出现，则表示成功；
+rabbitmq: localhost:15672   
+kibana:   localhost:5601
+
+
+5.进入容器,修改配置文件
+docker exec -it elk /bin/bash   #进入容器；
+cd  etc/logstash/conf.d         #会发现有4个.conf配置文件；
+（1）02-beats-input.conf：对5044端口进行证书验证规则，因为rabbitmq没有配置证书，所以全部删除；
+（2）10-syslog.conf:  对信息带nginx-access字符的日志进行了过滤；
+（3）11-nginx.conf:   对信息带nginx-access字符的日志进行了过滤；
+02-beats-input.conf的详细配置信息见上有；
+exit  #退出
+
+7.springcloud 日志传输配置， 在logback.xml中配置
+<appender name="stash-amqp" class="org.springframework.amqp.rabbit.logback.AmqpAppender"> 
+		<layout> 
+			<pattern> 
+				{"time": "%date{ISO8601}", "thread": "%thread", "level": "%level", "class": "%logger{60}", "message": "%msg", "application": "manager" } 
+			</pattern> 
+		</layout> 
+		<host>10.175.68.161</host> 
+		<port>5672</port> 
+		<username>admin</username> 
+		<password>admin</password> 
+		<declareExchange>true</declareExchange> 
+		<exchangeType>fanout</exchangeType> 
+		<exchangeName>dsc_api_Log</exchangeName> <!-- 需手动配置交换机与队列的关系 -->
+		<generateId>true</generateId> 
+		<charset>UTF-8</charset> 
+		<durable>true</durable> 
+		<deliveryMode>PERSISTENT</deliveryMode> 
+	</appender> 
+  
+  
+  
+  7.打开kibana页面查看；
