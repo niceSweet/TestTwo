@@ -1,3 +1,5 @@
+mysql -uroot -padmin -hlocalhost -P 3306   //连接数据库
+
 数据库操作
 1.use databasename     //切换数据库；
 2.drop databasename    //删除数据库；
@@ -64,3 +66,6 @@ SELECT id FROM table_name WHERE id <> 1003
 已经建好的表的约束
 1.alter table table_name add constraint 约束名  foreign key table_name(column)  references  主键表名(column_id);
 2.SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE;  //查看所有约束
+
+mysql 中日期和时间类型：
+1.日期和时间类型为DATETIME、DATE、TIMESTAMP、TIME和YEAR
