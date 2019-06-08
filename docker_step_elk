@@ -50,3 +50,12 @@ exit  #退出
   
   
   7.打开kibana页面查看；
+  
+  
+  
+  8.dockerfile:
+	FROM java:8
+	VOLUME /tmp
+	ADD springboot_project_new-1.0-SNAPSHOT.jar front.jar
+	RUN bash -c 'touch /front.jar'
+	ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/front.jar"]
