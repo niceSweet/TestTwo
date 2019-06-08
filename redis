@@ -1,0 +1,66 @@
+redis知识要点：
+
+主从复制
+哨兵模式
+持久化
+5种数据结构
+
+1. redis整合springboot1.5知识要点：
+     （1）spring 整合redis有两种方式：分别是jedis和RedisTemplate
+	  	 a.jedis是redis官方推荐的面向java的操作redis的客户端，
+	  	 b.而redisTemplate是springDataRedis中对jedisapi的高度封装，
+	  	    其实在spring boot的官网上我们也能看到，官方现在推荐的是springdataredis形式
+	  		相对于jedis来说可以方便的更换redis的java客户端，其比jedis多了自动管理连接池
+	  		的特性，方便与其他spring框架进行搭配使用。例如：SpringCache;
+	  
+	  (2)pom.xml中引入对jar包版本
+	     a.springboot1.4版本以前依赖为spring-boot-starter-redis，
+	     b.springboot1.4版本后依赖为spring-boot-starter-data-redis。
+	     c.如果用jedis 就是 redis.clients
+	  
+	  (3).一般来说还要配RedisConnectionFactory和 RedisTemplate<String, String> 
+	  	但是，从spingboot的redis自动配置类 edisAutoConfiguration.java 里可以看到，springboot
+	   已经帮我们陪好了；
+	    1. spring Data Redis 提供了两个模版：
+	    	a.RedisTemplate;  使用jdkSerializationRedisSerializer,这意味着key和value都会通过java进行序列化，
+	   	    b.StringRedisTemplate;  默认使用StringRedisSerializer;
+	    
+		    c.如果要是操作字符串的话 用StringRedisTemplate就可以了，但是想要储存一个对象（比如：User）
+		      w我们就需要使用RediaTemplate,并对key采用string序列化方式，对value采用json序列化方式，
+		      这就需要对RedisTemplate 进行自定义配置了；
+	    
+	  (4).缓存管理：springboot集成redis进行数据缓存功能，有两种实现：
+	    a.通过在代码中调用redis  API 实现数据的CRUD；
+	    b.通过在方法上添加缓存注解实现；
+	  	  因为之前已经配置了RedisTemplate了，springboot 就无法自动给redisCacheManager设置RedisTemplate
+	   	  了，所以也要自己配置CacheManager;
+	    c.缓存注解
+	     	（1）、@Cacheable:表明spring在调用方法之前，手下应该在缓存中查找方法的返回值，如果这个值能被找到，
+	     	      就会返回缓存的值，否则的话，这个方法就会被调用，返回值会放到缓存之中；
+	     	（2）、@CacheEvict:表示注解如果数据在缓存中，则先清空缓存，然后再改变数据；
+	     	（3）、@Cacheput:在执行前都会去检查缓存中是否存在之前执行过的结构，而是每次都会执行该方法，并将执行结构存入指定的缓存中；
+	     
+	     
+	  (5).redis优点：
+	  	a.速度快，redis是用c语言实现的；redis的所有数据存储在内存中，用于快速的读写访问；
+	    b.持久化：redis的所有数据存储在内存中，对数据对更新将异步对保存到磁盘上；
+	    		  redis对持久化有两种方式：AOF 和 RDB两种模式；
+	    c.支持多种数据结构：String、List Set hASH  Zset
+	    d.支持多种编程语言；
+	    e.主从复制：主服务器（master）执行写入（增删改）,从（slave）服务器执行查询
+	    复制提供可伸缩性和可用性，任何一个slave宕机，其他对slave还可以提供数据访问；
+	    f.虚拟内存：redis使用ram作为内存式存储，但是，在内存不足对情况下，它使用虚拟内存来保存数据；
+	    g.高可用及分布式：
+	    	Redis-Sentinel(v2.8)支持高可用
+	    	Redis-Cluster(v3.0)支持分布式
+	    	
+	    	
+	    	
+2.redis哨兵模式：监控redis系统的运行状况；
+（1）、redis的哨兵系统用语管理多个redis服务器，该系统执行以下三个任务：
+      a.监控：哨兵会不断检查你的Master和slave是否运作正常；
+      b.提醒：当被监控的某个redis出现问题时，哨兵可以通过API向管理员或者其他应用程序发送通知
+      c.自动故障迁移，当一个master不能正常工作时，哨兵会开始一次自动故障迁移操作，它会将失效
+        master的其中一个slave升级为新的master，并让失效master的其他撒略改为复制新的master。
+        当客户端试图连接失效的master时，集群也会向客户端返回新的master的地址，使得集群可以使用
+        新的master；
